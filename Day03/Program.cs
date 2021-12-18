@@ -44,10 +44,5 @@ static char CountDominant(List<string> inp, int pos)
 {
     List<char> relevantNumbers = inp.Select(row => row[pos]).ToList();
 
-    char retval = 'x';
-
-    retval = relevantNumbers.Where(x => x == '0').Count() > relevantNumbers.Count() / 2 ? '0' : '1';
-
-    return retval;
-
+    return relevantNumbers.Where(x => x == '0').Count() > relevantNumbers.Count() / 2 ? '0' : '1';
 }
