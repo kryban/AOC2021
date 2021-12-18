@@ -3,12 +3,24 @@ using System.Collections.Generic;
 
 int totalDepth = 0;
 int totalDistance = 0;
+int totalAim = 0;
 int countedRows = 0;
 
 string inputFile = @"./ProjectItems/input.txt";
-File.ReadAllLines(inputFile).ToList().ForEach(x => MeasureAction(x, ref totalDepth, ref totalDistance, ref countedRows));
+File.ReadAllLines(inputFile).ToList().ForEach(x => MeasureAction(1,x, ref totalDepth, ref totalDistance, ref totalAim, ref countedRows));
+Console.WriteLine($"Part1: Counted rows: {countedRows} - Distance {totalDistance} - Depth {totalDepth}");
+Console.WriteLine($"Part1: Answer: {totalDistance * totalDepth}");
 
-static void MeasureAction(string rawAction, ref int totalDepth, ref int totalDistance, ref int countedRows)
+totalDepth = 0;
+totalDistance = 0;
+totalAim = 0;
+countedRows = 0;
+File.ReadAllLines(inputFile).ToList().ForEach(x => MeasureAction(2, x, ref totalDepth, ref totalDistance, ref totalAim, ref countedRows));
+Console.WriteLine($"Part2: Counted rows: {countedRows} - Distance {totalDistance} - Depth {totalDepth}");
+Console.WriteLine($"Part2: Answer: {totalDistance * totalDepth}");
+
+
+static void MeasureAction(int part, string rawAction, ref int totalDepth, ref int totalDistance, ref int totalAim, ref int countedRows)
 {
     var row = rawAction.ToString().Split(' ');
 
@@ -17,20 +29,30 @@ static void MeasureAction(string rawAction, ref int totalDepth, ref int totalDis
 
     if(action.Equals("down"))
     {
-        totalDepth += amount;
+        if(part == 1)        
+            totalDepth += amount;
+        else
+            totalAim += amount;
     }
     else if(action.Equals("up"))
     {
-        totalDepth -= amount;
+        if (part == 1)
+            totalDepth -= amount;
+        else
+            totalAim -= amount;
     }
     else
     {
-        totalDistance += amount;
+        if (part == 1)
+            totalDistance += amount;
+        else
+        {
+            totalDistance += amount;
+            totalDepth += totalAim * amount;
+        }
     } 
 
     countedRows++;
 }
 
-Console.WriteLine($"Counted rows: {countedRows} - Distance {totalDistance} - Depth {totalDepth}");
-Console.WriteLine($"Answer part 1: {totalDistance*totalDepth}");
 Console.Read();
