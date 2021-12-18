@@ -1,29 +1,45 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-Console.WriteLine("Hello, World!");
-
 string inputFile = @"./ProjectItems/input.txt";
 
 var input = File.ReadAllLines(inputFile).Select(x => int.Parse(x)).ToList();
 int countIncreased = 0;
 
-int previous = input[0];
+int previous = 0;
+var index = 1;
 
-input.Skip(1).ToList().ForEach(current => IncreaseCounter(current, ref previous, ref countIncreased));
+input.ToList().ForEach(x => Counter(index++, 1, ref countIncreased, input, ref previous));
+Console.WriteLine($"Answer Part 1: {countIncreased}");
 
-Console.WriteLine($"Answer: {countIncreased}");
+previous = 0;
+countIncreased = 0;
+index = 1;
+
+input.ToList().ForEach(x => Counter(index++, 3, ref countIncreased, input, ref previous));
+Console.WriteLine($"Answer Part 2: {countIncreased}");
 Console.ReadKey();
 
-
-static void IncreaseCounter(int current, ref int previous, ref int counter)
+static void Counter(int currentIndex, int numberOflookBackItems, ref int counter, List<int> inp, ref int previous)
 {
+    var canLookBackFarEnough = currentIndex >= numberOflookBackItems;
+    var goBack= numberOflookBackItems;
+
+    int totalCurrent = 0;
+
+    if(canLookBackFarEnough)
     {
-        if (current > previous)
+        while(goBack >0)
+        {
+            totalCurrent += inp[currentIndex - goBack];
+            goBack--;
+        }
+
+        if (previous != 0 && totalCurrent > previous)
         {
             counter++;
         }
 
-        previous = current;
+        previous = totalCurrent;
     }
 }
 
