@@ -12,13 +12,14 @@ SetGamma(inputRaw, elementLength, gamma);
 SetEpsilon(gamma, epsilon);
 CalculateAnswerPart1(gamma, epsilon);
 
+CalculateAnswerPart2(inputRaw, elementLength);
+
 static void CalculateAnswerPart1(List<int> gamma, List<int> epsilon)
 {
     var gammaInt = Convert.ToInt32(string.Concat(gamma.Select(x => x.ToString())), 2);
     var epsilonInt = Convert.ToInt32(string.Concat(epsilon.Select(x => x.ToString())), 2);
 
     Console.WriteLine($"Part 1: Answer {gammaInt*epsilonInt}");
-    Console.ReadKey();
 }
 
 static void SetEpsilon(List<int> gamma, List<int> epsilon)
@@ -44,9 +45,42 @@ static int CountDominant(List<string> inp, int pos)
 {
     List<int> relevantNumbers = inp.Select(row => int.Parse(row[pos].ToString())).ToList();
 
-    int foo; 
-    foo = relevantNumbers.Where(x => x == 0).Count() > (relevantNumbers.Count() / 2) ? 0 : 1;
-    return foo;
+    if (inp.Count > 1)
+        return relevantNumbers.Where(x => x == 1).Count() >= (relevantNumbers.Count() / 2) ? 1 : 0; // if 1''s and 0s are equal, then 1 is dominant
+    else
+        return int.Parse(inp.First()[pos].ToString());
 }
 
-//static void FilterElementsWithDominant(List<char> inp, char odm )
+static int CountRecessive(List<string> inp, int pos)
+{
+    List<int> relevantNumbers = inp.Select(row => int.Parse(row[pos].ToString())).ToList();
+
+    if (inp.Count > 1)
+        return relevantNumbers.Where(x => x == 0).Count() <= (relevantNumbers.Count() / 2) ? 0 : 1; // if 1''s and 0s are equal, then 0 is recessive
+    else
+        return int.Parse(inp.First()[pos].ToString());
+}
+
+static List<string> FilterElementsWithCounted(List<string> inp, int dominant, int relevantPosition)
+{
+    return inp.Where(x => x[relevantPosition] == Convert.ToChar(dominant.ToString())).ToList();
+}
+
+static void CalculateAnswerPart2(List<string> inp, int length)
+{
+    List<string> listOxygen = inp;
+    List<string> listCo2 = inp;
+
+    for (int i = 0; i < length; i++)
+    {
+        listOxygen = FilterElementsWithCounted(listOxygen, CountDominant(listOxygen, i), i);
+        listCo2 = FilterElementsWithCounted(listCo2, CountRecessive(listCo2, i), i);
+    }
+
+    var oxygen = Convert.ToInt32(listOxygen.First(), 2);
+    var co2 = Convert.ToInt32(listCo2.First(), 2);
+
+    Console.WriteLine($"Part 2: Answer {oxygen*co2}");
+    Console.ReadKey();
+
+}
