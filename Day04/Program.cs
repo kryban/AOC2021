@@ -5,49 +5,68 @@ string inputFile = @"./ProjectItems/input.txt";
 var inputRaw = File.ReadAllLines(inputFile).ToList();
 
 List<int> drawnNumbers = inputRaw.First().Split(',').Select(x => int.Parse(x)).ToList();
-List<BingoCard> cards = new List<BingoCard>();
+string nrs = inputRaw.First();
 
+List<BingoCard> cards = new List<BingoCard>();
 int winningNumber = 0;
 int sumOfRestUnmarked = 0;
 
 ImportCards(inputRaw, cards);
-
-CheckForBingo(drawnNumbers, cards, ref sumOfRestUnmarked, ref winningNumber);
-
+CheckForBingo(1,drawnNumbers, cards, ref sumOfRestUnmarked, ref winningNumber);
+Console.WriteLine($"All numbers to draw: {nrs}");
 Console.WriteLine($"WinningNumber: {winningNumber} - Sum of rest of Unmarked numbers: {sumOfRestUnmarked}");
 Console.WriteLine($"Answer Day 4, Part 1: {winningNumber * sumOfRestUnmarked}");
+Console.WriteLine("-----------");
+
+cards = new List<BingoCard>();
+winningNumber = 0;
+sumOfRestUnmarked = 0;
+
+ImportCards(inputRaw, cards);
+CheckForBingo(2, drawnNumbers, cards, ref sumOfRestUnmarked, ref winningNumber);
+Console.WriteLine($"All numbers to draw: {nrs}");
+Console.WriteLine($"WinningNumber: {winningNumber} - Sum of rest of Unmarked numbers: {sumOfRestUnmarked}");
+Console.WriteLine($"Answer Day 4, Part 2: {winningNumber * sumOfRestUnmarked}");
+
 Console.ReadKey();
 
-void CheckForBingo(List<int> drawnNumbers, List<BingoCard> cards, ref int sumOfRestUnmarked, ref int winningNumber)
+void CheckForBingo(int part, List<int> drawnNumbers, List<BingoCard> cards, ref int sumOfRestUnmarked, ref int winningNumber)
 {
+    // for part 1 we stop at the FIRST winning bingo card 
+    // for part 2 we stop at the LAST winning bingo card
     bool stop = false;
+    List<BingoCard> shadowCards = new List<BingoCard>(cards);
     foreach (var nr in drawnNumbers)
     {
-        foreach (var card in cards)
+        foreach (var card in new List<BingoCard>(shadowCards)) // new List instead of cards directly, to be able to modify the collection of iteration
         {
             if (NumberPresentOnCard(nr, card))
             {
                 MarkNumbers(nr, card);
-                CheckBingo(card, nr, ref stop);
+                CheckBingo(shadowCards, card, nr, ref stop);
             }
-            if (stop) break;
+            if (stop && part == 1) break;
         }
-        if (stop) break;
+        if (stop && part == 1) break;
     }
+
+    cards = new List<BingoCard>(shadowCards);
 }
 
-void CheckBingo(BingoCard card, int nr, ref bool stop)
+
+void CheckBingo(List<BingoCard> cards, BingoCard card, int nr, ref bool stop)
 {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i <= 4; i++)
     {
         var markedInSameRow = card.MarkedNumbers.Count(x => x.Row == i);
         var markedInSamerColumn = card.MarkedNumbers.Count(x => x.Column == i);
 
         if (markedInSameRow == 5 || markedInSamerColumn == 5)
         {
-            Console.WriteLine("BINGO");
+            Console.WriteLine($"BINGO with {nr}");
             winningNumber = nr;
             sumOfRestUnmarked = card.UnmarkedNumbers.Sum(x => x.Number);
+            cards.Remove(card);
             stop = true;
             break;
         }
