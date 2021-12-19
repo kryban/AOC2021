@@ -1,0 +1,13 @@
+﻿
+Een kaart bestaat uit verzameling van NietGetrokkenBingonummers en een verzameling GetrokkenBingonummers
+Een bingonummer heeft een nummer, een horizontale positinummer van 1 t/m 5 en een een verticale positinummer van 1 t/m 5 
+Bij het inlezen van de input worden alle nummers vertaal naar NietGetrokkenBingoNummers
+
+Zodra een nummer getrokken wordt, dan wordt elke kaart doorgelopen op aanwezigheid van de getrokken nummer. 
+Zodra een nummer op een kaart gevonden wordt, dan wordt het gezet in de verzameling getrokken bingonummers en afgehaald van de nietGetrokkenBingonummers.
+Zodra een nieuw nummer in de verzameling GetrokkenBingonummers gezet is, wordt er geteld in of de verzameling op 5 dezelfde horizontale of verticale posities.
+Indien een verticale of horizontal positie 5 x gevonden is, dan is er BINGO.
+
+Zodra Bingo gevonden is, wordt het laatste getal onthouden en apart gezet
+Dan worden alle overgebleven getallen uit NietGetrokkenBingonummers bij elkaar opgeteld en vermenigvuldigd met laatste bingo-geven getal.
+
