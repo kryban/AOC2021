@@ -4,35 +4,35 @@ Console.WriteLine("Hello, World!");
 string inputFile = @"./ProjectItems/input.txt";
 var inputRaw = File.ReadAllLines(inputFile).ToList();
 var elementLength = inputRaw.First().Length;
-List<char> gamma = new List<char>();
-List<char> epsilon = new List<char>();
+List<int> gamma = new List<int>();
+List<int> epsilon = new List<int>();
 
 
 SetGamma(inputRaw, elementLength, gamma);
 SetEpsilon(gamma, epsilon);
-CalculateAnswer(gamma, epsilon);
+CalculateAnswerPart1(gamma, epsilon);
 
-static void CalculateAnswer(List<char> gamma, List<char> epsilon)
+static void CalculateAnswerPart1(List<int> gamma, List<int> epsilon)
 {
-    var gammaInt = Convert.ToInt32(new string(gamma.ToArray()),2);
-    var epsilonInt = Convert.ToInt32(new string(epsilon.ToArray()),2);
+    var gammaInt = Convert.ToInt32(string.Concat(gamma.Select(x => x.ToString())), 2);
+    var epsilonInt = Convert.ToInt32(string.Concat(epsilon.Select(x => x.ToString())), 2);
 
     Console.WriteLine($"Part 1: Answer {gammaInt*epsilonInt}");
     Console.ReadKey();
 }
 
-static void SetEpsilon(List<char> gamma, List<char> epsilon)
+static void SetEpsilon(List<int> gamma, List<int> epsilon)
 {
     foreach (var item in gamma)
     {
-        if (item == '1')
-            epsilon.Add('0');
+        if (item == 1)
+            epsilon.Add(0);
         else
-            epsilon.Add('1');
+            epsilon.Add(1);
     }
 }
 
-static void SetGamma(List<string> inp, int length, List<char> gamma)
+static void SetGamma(List<string> inp, int length, List<int> gamma)
 {
     for (int i = 0; i < length; i++)
     {
@@ -40,9 +40,13 @@ static void SetGamma(List<string> inp, int length, List<char> gamma)
     }
 }
 
-static char CountDominant(List<string> inp, int pos)
+static int CountDominant(List<string> inp, int pos)
 {
-    List<char> relevantNumbers = inp.Select(row => row[pos]).ToList();
+    List<int> relevantNumbers = inp.Select(row => int.Parse(row[pos].ToString())).ToList();
 
-    return relevantNumbers.Where(x => x == '0').Count() > relevantNumbers.Count() / 2 ? '0' : '1';
+    int foo; 
+    foo = relevantNumbers.Where(x => x == 0).Count() > (relevantNumbers.Count() / 2) ? 0 : 1;
+    return foo;
 }
+
+//static void FilterElementsWithDominant(List<char> inp, char odm )
