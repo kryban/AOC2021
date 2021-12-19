@@ -12,46 +12,57 @@ int sumOfRestUnmarked = 0;
 
 ImportCards(inputRaw, cards);
 
-MarkDrawnNumbers(drawnNumbers, cards, ref sumOfRestUnmarked, ref winningNumber);
-
+CheckForBingo(drawnNumbers, cards, ref sumOfRestUnmarked, ref winningNumber);
 
 Console.WriteLine($"WinningNumber: {winningNumber} - Sum of rest of Unmarked numbers: {sumOfRestUnmarked}");
-Console.WriteLine($"Answer part 1: {winningNumber*sumOfRestUnmarked}"); 
+Console.WriteLine($"Answer Day 4, Part 1: {winningNumber * sumOfRestUnmarked}");
 Console.ReadKey();
 
-void MarkDrawnNumbers(List<int> drawnNumbers, List<BingoCard> cards, ref int sumOfRestUnmarked, ref int winningNumber)
+void CheckForBingo(List<int> drawnNumbers, List<BingoCard> cards, ref int sumOfRestUnmarked, ref int winningNumber)
 {
-    var stop = false;
-    foreach(var nr in drawnNumbers)
+    bool stop = false;
+    foreach (var nr in drawnNumbers)
     {
         foreach (var card in cards)
         {
-            if(card.UnmarkedNumbers.Any(x => x.Number == nr))
+            if (NumberPresentOnCard(nr, card))
             {
-                card.MarkedNumbers.AddRange(card.UnmarkedNumbers.Where(x => x.Number == nr));
-                card.UnmarkedNumbers.RemoveAll(x => x.Number == nr);
-
-                // check for bingo
-                for (int i = 0; i < 4; i++)
-                {
-                    var foo = card.MarkedNumbers.Count(x => x.Row == i);
-                    var bar = card.MarkedNumbers.Count(x => x.Column == i);
-
-                    if(foo == 5 || bar == 5)
-                    {
-                        // calculate answer
-                        Console.WriteLine("BINGO");
-                        winningNumber = nr;
-                        sumOfRestUnmarked = card.UnmarkedNumbers.Sum(x => x.Number);
-                        stop = true;
-                        break;
-                    }
-                }
+                MarkNumbers(nr, card);
+                CheckBingo(card, nr, ref stop);
             }
             if (stop) break;
         }
         if (stop) break;
     }
+}
+
+void CheckBingo(BingoCard card, int nr, ref bool stop)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        var markedInSameRow = card.MarkedNumbers.Count(x => x.Row == i);
+        var markedInSamerColumn = card.MarkedNumbers.Count(x => x.Column == i);
+
+        if (markedInSameRow == 5 || markedInSamerColumn == 5)
+        {
+            Console.WriteLine("BINGO");
+            winningNumber = nr;
+            sumOfRestUnmarked = card.UnmarkedNumbers.Sum(x => x.Number);
+            stop = true;
+            break;
+        }
+    }
+}
+
+bool NumberPresentOnCard(int nr, BingoCard card)
+{
+    return card.UnmarkedNumbers.Any(x => x.Number == nr);
+}
+
+void MarkNumbers(int nr, BingoCard card)
+{
+    card.MarkedNumbers.AddRange(card.UnmarkedNumbers.Where(x => x.Number == nr));
+    card.UnmarkedNumbers.RemoveAll(x => x.Number == nr);
 }
 
 void ImportCards(List<string> inputRaw, List<BingoCard> cards)
@@ -76,7 +87,7 @@ void ImportCards(List<string> inputRaw, List<BingoCard> cards)
         }
         else
         {
-            foreach (var nr in row.Replace("  "," ").Split(' ').Where(x => x.Length > 0))
+            foreach (var nr in row.Replace("  ", " ").Split(' ').Where(x => x.Length > 0))
             {
                 card.UnmarkedNumbers.Add(
                     new BingoNumber { Number = Convert.ToInt32(nr), Row = currentRow, Column = currentColumn });
