@@ -42,7 +42,7 @@ List<Line> ImportRelevantLines(int part, List<string> inputRaw)
 
     var cleanedInput = inputRaw.Select(x => ReplaceArrow(x)).ToList();
 
-    cleanedInput.ForEach(line => retval.Add(CreateLineFromInput(part, line)));
+    cleanedInput.ForEach(line => retval.Add(CreateLineFromInput(line)));
 
     retval = FilterForRelevantLines(part,retval);
 
@@ -54,7 +54,7 @@ string ReplaceArrow(string input)
     return input.Trim().Replace(" ", string.Empty).Replace("->", ",");
 }
 
-Line CreateLineFromInput(int part, string input)
+Line CreateLineFromInput(string input)
 {
     var points = input.Split(',').Select(x => int.Parse(x)).ToList();
 
@@ -65,55 +65,11 @@ Line CreateLineFromInput(int part, string input)
         endX = points[2],
         endY = points[3],
 
-        series = part == 1 
-        ? SetLineSeriePart2(points[0], points[1], points[2], points[3])
-        : SetLineSeriePart2(points[0], points[1], points[2], points[3])
+        series = SetLineSeriePart(points[0], points[1], points[2], points[3])
     };
 }
 
-List<(int x, int y)> SetLineSeriePart1(int startX, int startY, int endX, int endY)
-{   
-    var retval = new List<(int x,int y)>();
-
-    if (startX == endX)
-    {
-        if (endY > startY)
-        {
-            for (int i = startY; i <= endY; i++)
-            {
-                retval.Add((startX, i));
-            }
-        }
-        else
-        {
-            for (int i = endY; i <= startY; i++)
-            {
-                retval.Add((startX, i));
-            }
-        }
-    }
-    else // startY == endY
-    {
-        if (endX > startX)
-        {
-            for (int i = startX; i <= endX; i++)
-            {
-                retval.Add((i, startY));
-            }
-        }
-        else
-        {
-            for (int i = endX; i <= startX; i++)
-            {
-                retval.Add((i, startY));
-            }
-        }
-    }
-
-    return retval;
-}
-
-List<(int x, int y)> SetLineSeriePart2(int startX, int startY, int endX, int endY)
+List<(int x, int y)> SetLineSeriePart(int startX, int startY, int endX, int endY)
 {
     var retval = new List<(int x, int y)>();
     //var difference = Math.Abs(startX - endX);
