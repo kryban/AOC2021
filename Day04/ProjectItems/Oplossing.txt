@@ -11,3 +11,20 @@ Indien een verticale of horizontal positie 5 x gevonden is, dan is er BINGO.
 Zodra Bingo gevonden is, wordt het laatste getal onthouden en apart gezet
 Dan worden alle overgebleven getallen uit NietGetrokkenBingonummers bij elkaar opgeteld en vermenigvuldigd met laatste bingo-geven getal.
 
+--- output 
+
+
+BINGO
+WinningNumber: 74 - Sum of rest of Unmarked numbers: 866
+Answer part 1: 64084
+
+All numbers to draw: 7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+WinningNumber: 24 - Sum of rest of Unmarked numbers: 188
+Answer Day 4, Part 1: 4512
+-----------
+BINGO with 24
+BINGO with 16
+BINGO with 13
+All numbers to draw: 7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+WinningNumber: 13 - Sum of rest of Unmarked numbers: 148
+Answer Day 4, Part 2: 1924
