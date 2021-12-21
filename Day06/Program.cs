@@ -3,39 +3,38 @@ Console.WriteLine("Hello, World!");
 
 string inputFile = @"./ProjectItems/input.txt";
 var inputRaw = File.ReadAllLines(inputFile).ToList();
-var initialFishes = inputRaw.First().Split(',').Select(x => new Fish(int.Parse(x))).ToList();
-var duration = 80;
-var population = new List<Fish>(initialFishes);
+var initialPopulation = inputRaw.First().Split(',').Select(x => int.Parse(x)).ToList();
 
-for (int i = 0; i < duration; i++)
+long MeasurePopulattion(int duration, List<int> initialPopulation)
 {
-    foreach (var fish in new List<Fish>(population))
+    long[] timers = new long[9];
+    long retval = 0;
+    foreach (var timer in initialPopulation)
     {
-        if(fish.Timer == 0)
-        {
-            fish.Timer = 6;
-            population.Add(new Fish());
-            continue;
-        }
-
-        fish.Timer--;
+        timers[timer]++;
     }
+
+    for (int i = 0; i < duration; i++)
+    {
+        var newBirthsNewCycles = timers[0];
+        timers[0] = timers[1];
+        timers[1] = timers[2];
+        timers[2] = timers[3];
+        timers[3] = timers[4];
+        timers[4] = timers[5];
+        timers[5] = timers[6];
+        timers[6] = timers[7] + newBirthsNewCycles;
+        timers[7] = timers[8];
+        timers[8] = newBirthsNewCycles;
+    }
+
+    timers.ToList().ForEach(subPopulation => retval += subPopulation);
+
+    return retval;
 }
 
-Console.WriteLine($"Total days easured: {duration}");
-Console.WriteLine($"Answer day 5, part 1: {population.Count}");
+Console.WriteLine($"Answer day 5, part 1: {MeasurePopulattion(80, initialPopulation)}");
+Console.WriteLine($"Answer day 5, part 2: {MeasurePopulattion(256, initialPopulation)}");
 Console.ReadKey();
 
-class Fish
-{
-    public Fish()
-    {
-        Timer = 8;
-    }
-    public Fish(int timer)
-    {
-        Timer = timer;
-    }
-    public int Timer { get; set; }
-}
 
