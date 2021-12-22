@@ -1,0 +1,80 @@
+﻿Pseudo:
+1. Vertalen naar generieke posities
+
+LU = LeftUp
+MU = MidUp
+RU = RightUp 
+MM = MidMid
+LD = LefDown 
+MD = MidDown
+RD = RightDown
+
+  MUMU
+LU	  RU
+LU	  RU
+  MMMM
+LD	  RD
+LD    RD
+  MDMD
+
+Unieke aantallen voor de cijfer 
+1- (2letters), 
+4- (4 letters),
+7- (3letters en 
+8- (7 letters)
+
+
+1.			4.				7.				8.
+  ....		  ....			  MUMU			  MUMU	
+..	  RU	LU	  RU		..	  RU		LU	  RU				
+..	  RU	LU	  RU		..	  RU		LU	  RU				
+  ....		  MMMM			  ....			  MMMM	
+..	  RD	..	  RD		..	  RD		LD	  RD				
+..	  RD	..	  RD		..	  RD		LD    RD				
+  ....		  ....			  ....			  MDMD	
+
+Stel de we moeten op basis van letters achter codering komen (is dus niet bekend maar moet worden afgeleid)
+  aaaa	
+gg	  bb
+gg	  bb
+  cccc	
+dd	  ff
+dd    ff
+  eeee	
+
+bf = 
+we weten op basis van lengte dat dit een 1 is en dus RURD is. b=RU en f=RD
+
+gcbf 
+we weten op basis van lengte dat dit een 4 is. Dus g=LU, c=MM, b=RU en f=RD
+
+acf
+we weten op basis van lengte dat dit een 7 is, dus a=MU, c=MM en f=RD
+
+
+  Uitgeschreven is dat (als we abcdsfg gebruiken)
+	LU	MU	RU	MM	LD	RD MD
+2/1 		b			f
+5/2 -					-
+5/3 -				-		
+4/4	g		b	c		f
+5/5			-		-	
+6/6			-
+3/7		a		c		f
+7/8
+6/9					-
+  ------------------------------
+	g	a	b	c	?	f	?
+
+
+Eigenschappen 
+1 = 2 lang
+2 = 5 lang, geen LU, RD
+3 = 5 lang, geen LU, LD
+4 = 4 lang
+5 = 5 lang, geen RU, LD
+6 = 6 lang, geen RU
+7 = 3 lang
+8 = 7 lang
+9 = 6 lang, geen LD
+
