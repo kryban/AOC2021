@@ -9,20 +9,22 @@ LD = LefDown
 MD = MidDown
 RD = RightDown
 
-  MUMU
-LU	  RU
-LU	  RU
-  MMMM
-LD	  RD
-LD    RD
-  MDMD
+  MUMU			0 = LU MU RU LD RD MD 
+LU	  RU   		1 = RU RD
+LU	  RU		2 = MU RI MM LD MD
+  MMMM			3 = MU RU MM RD MD
+LD	  RD		4 = LU MM RU RD
+LD    RD		5 = MU LU MM RD MD 
+  MDMD			6 = MU LU MM LD RD MD 
+				7 = MU RU RD
+				8 = LU MU RU MM LD MD RD
+				9 = LU MU RU MM MD RD
 
 Unieke aantallen voor de cijfer 
 1- (2letters), 
 4- (4 letters),
 7- (3letters en 
 8- (7 letters)
-
 
 1.			4.				7.				8.
   ....		  ....			  MUMU			  MUMU	
@@ -54,6 +56,7 @@ we weten op basis van lengte dat dit een 7 is, dus a=MU, c=MM en f=RD
 
   Uitgeschreven is dat (als we abcdsfg gebruiken)
 	LU	MU	RU	MM	LD	RD MD
+6/0				-
 2/1 		b			f
 5/2 -					-
 5/3 -				-		
@@ -66,8 +69,8 @@ we weten op basis van lengte dat dit een 7 is, dus a=MU, c=MM en f=RD
   ------------------------------
 	g	a	b	c	?	f	?
 
-
 Eigenschappen 
+0 = 6 lang, geen MM
 1 = 2 lang
 2 = 5 lang, geen LU, RD
 3 = 5 lang, geen LU, LD
@@ -77,4 +80,23 @@ Eigenschappen
 7 = 3 lang
 8 = 7 lang
 9 = 6 lang, geen LD
+
+in alle sets is een 2, 3, 4, en 7 lang
+Daarom zijn de volgende segmenten ALTIJD bekend
+2 lang is een 1 en zet RU, en RD
+3 lang zet MU, RU en RD
+4 lang zet LU, MM, RU en RD
+ -- 7 lang zet alles, maar daar heb je niets aan, deze dus overslaan
+
+ 2, 3, 4 lang zetten dus LU, MU, RU, MM, RD
+
+5 lang kan zijn 2, 3, of 5
+	2 kan het alleen zijn als MU, RU, MM in voorkomen maar RD NIET
+	3 kan het alleen zijn als MU, RU, MM in voorkomen maar LD NIET
+	5 kan het alleen zijn als MU, LU, MM, RD in voorkomen 
+
+6 lang kan zijn 0, 6 of 9
+	0 kan het alleen zijn als het 6 lang is en GEEN MM heeft
+	6 kan het alleen zijn als het 6 lang is en GEEN RU heeft
+	9 kan het alleen zijn als MU, LU, MM, RU en RD in voorkomen 
 
