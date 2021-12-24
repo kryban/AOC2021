@@ -1,5 +1,4 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 Console.WriteLine("Hello, World!");
@@ -21,10 +20,10 @@ int DecodePart2(List<string> inputRaw)
     int retval = 0;
 
     var importIn = inputRaw.Select(x => x.Split('|')[0])
-        .Select(inputs => inputs.Trim().Split(' ').OrderBy(inputs => inputs.Length)).ToList();//.OrderBy(yy => yy.Length));
+        .Select(inputs => inputs.Trim().Split(' ').OrderBy(inputs => inputs.Length)).ToList();
     
     var importOutp = inputRaw.Select(x => x.Split('|')[1])
-        .Select(inputs => inputs.Trim().Split(' ').OrderBy(inputs => inputs.Length)).ToList();
+        .Select(inputs => inputs.Trim().Split(' ').ToList()).ToList();
 
     List<int> ints = new List<int>();
     int i = 0;
@@ -36,8 +35,6 @@ int DecodePart2(List<string> inputRaw)
         ints.Add(mapper.Translate(importOutp[i].ToList()));
         i++;
     }
-
-    //var importOutput = inputRaw.Select(x => x.Split('|')[1]).ToList().Select(y => y.Trim().Split(' ')).ToList();
 
     return ints.Sum();
 }
@@ -74,118 +71,209 @@ public class DigitGeneric
     //RightDown
     public char RD { get; set; }
 
-    public Regex n0 => new Regex(ToPattern($"{LU}{MU}{RU}{LD}{RD}{MD}"));//6
-    public Regex n1 => new Regex(ToPattern($"{RU}{RD}")); //2
-    public Regex n2 => new Regex(ToPattern($"{MU}{RU}{MM}{LD}{MD}"));//5
-    public Regex n3 => new Regex(ToPattern($"{MU}{RU}{MM}{RD}{MD}")); //5
-    public Regex n4 => new Regex(ToPattern($"{LU}{MM}{RU}{RD}")); //4
-    public Regex n5 => new Regex(ToPattern($"{MU}{LU}{MM}{RD}{MD}")); //5
-    public Regex n6 => new Regex(ToPattern($"{MU}{LU}{MM}{LD}{RD}{MD}")); //6
-    public Regex n7 => new Regex(ToPattern($"{MU}{RU}{RD}")); //3
-    public Regex n8 => new Regex(ToPattern($"{LU}{MU}{RU}{MM}{LD}{MD}{RD}"));
-    public Regex n9 => new Regex(ToPattern($"{LU}{MU}{RU}{MM}{MD}{RD}")); //6
+    public string s0 {get;set;}
+    public string s1 {get;set;}
+    public string s2 {get;set;}
+    public string s3 {get;set;}
+    public string s4 {get;set;}
+    public string s5 {get;set;}
+    public string s6 {get;set;}
+    public string s7 {get;set;}
+    public string s8 {get;set;}
+    public string s9 { get; set; }
+
+
+
+    public Regex n0 => new Regex(ToPattern($"{s0}"));
+    public Regex n1 => new Regex(ToPattern($"{s1}")); //2
+    public Regex n2 => new Regex(ToPattern($"{s2}")); //5
+    public Regex n3 => new Regex(ToPattern($"{s3}")); //5
+    public Regex n4 => new Regex(ToPattern($"{s4}")); //4
+    public Regex n5 => new Regex(ToPattern($"{s5}")); //5
+    public Regex n6 => new Regex(ToPattern($"{s6}")); //6
+    public Regex n7 => new Regex(ToPattern($"{s7}")); //3
+    public Regex n8 => new Regex(ToPattern($"{s8}"));
+    public Regex n9 => new Regex(ToPattern($"{s9}")); //6
 
     public void SetSegments(IEnumerable<string> inpSet)
     {
-        string s0 = "";
-        string s1 = "";
-        string s2 = "";
-        string s3 = "";
-        string s4 = "";
-        string s5 = "";
-        string s6 = "";
-        string s7 = "";
-        string s8 = "";
-        string s9 = "";
+        s0 = "";
+        s1 = "";
+        s2 = "";
+        s3 = "";
+        s4 = "";
+        s5 = "";
+        s6 = "";
+        s7 = "";
+        s8 = "";
+        s9 = "";
 
         foreach (var inp in inpSet)
         {
             if (inp.Length == 2)
             {
-                //2 lang is een 1 en zet RU, en RD
-                //1 = RU RD
-                RU = inp[0];
-                RD = inp[1];
+                s1 = inp;
             }
-            if (inp.Length == 3)
+            else if (inp.Length == 3)
             {
-                //3 lang zet MU, RU en RD
-                //7 = MU RU RD
-                var tmp = inp;
-                tmp = tmp.Replace(RU.ToString(),String.Empty);
-                tmp = tmp.Replace(RD.ToString(),String.Empty);
-                MU = tmp[0];
+                s7 = inp;
             }
-            if (inp.Length == 4)
+            else if (inp.Length == 4)
             {
-                //4 lang zet LU, MM, RU en RD
-                //4 = LU MM RU RD
-                var tmp = inp;
-                tmp = tmp.Replace(RU.ToString(), String.Empty);
-                tmp = tmp.Replace(RD.ToString(), String.Empty);
-                LU = tmp[0];
-                MM = tmp[1];
+                s4 = inp;
             }
-            if (inp.Length == 5)
+            else if (inp.Length == 7)
+            {
+                s8 = inp;
+            }
+            else if (inp.Length == 5)
             {
                 //2, 3, 4 lang zetten LU, MU, RU, MM, RD
-                var tmp = inp;
+                bool itIs5 = Determine5(inp, s1, s7, s4);
+                bool itIs3 = Determine3(inp, s7);
+                bool itIs2 = !itIs5 && !itIs3;
 
-//                tmp = tmp.Replace(LU.ToString(), String.Empty);
-//                tmp = tmp.Replace(MU.ToString(), String.Empty);
-//                tmp = tmp.Replace(RU.ToString(), String.Empty);
-//                tmp = tmp.Replace(MM.ToString(), String.Empty);
-//                tmp = tmp.Replace(RD.ToString(), String.Empty);
-
-                //5 lang kan zijn 2, 3, of 5
-                /////onzin//2 kan het alleen zijn als MU, RU, MM in voorkomen maar RD NIET
-                ///
-                //2 kan het alleen zijn als 2 letter in 7 voorkomen, 1 letter in 4 en de overgebleven niet in 1 of 7
-                if (inp.Contains(MU) && inp.Contains(RU) && inp.Contains(MM) && !inp.Contains(RD))
-                {
-                    LD = tmp[0].Equals(MD) ? tmp[1] : tmp[0];
-                    MD = tmp[1].Equals(LD) ? tmp[0] : tmp[1];
-                }
-
-                //3 kan het alleen zijn als MU, RU, MM in voorkomen maar LD NIET
-                if (inp.Contains(MU) && inp.Contains(RU) && inp.Contains(MM) && !inp.Contains(LD))
-                    MD = tmp[0];
-
-                //5 kan het alleen zijn als MU, LU, MM, RD in voorkomen 
-                if (inp.Contains(MU) && inp.Contains(LU) && inp.Contains(MM) && inp.Contains(RD))
-                    MD = tmp[0];
+                if (itIs2)
+                    s2 = inp;
+                if (itIs3)
+                    s3 = inp;
+                if(!itIs2 && !itIs3) 
+                    s5 = inp;
             }
-            if (inp.Length == 6)
+            else
             {
-                //2, 3, 4 lang zetten LU, MU, RU, MM, RD
-                var tmp = inp;
+                bool itIs9 = Determine9(inp, s4);
+                bool itIs0 = Determine0(inp, s4, s7);
 
-                tmp = tmp.Replace(LU.ToString(), String.Empty);
-                tmp = tmp.Replace(MU.ToString(), String.Empty);
-                tmp = tmp.Replace(RU.ToString(), String.Empty);
-                tmp = tmp.Replace(MM.ToString(), String.Empty);
-                tmp = tmp.Replace(RD.ToString(), String.Empty);
+                if (itIs9)  
+                    s9 = inp;
+                
+                if(itIs0)
+                    s0 = inp;
 
-                //6 lang kan zijn 0, 6 of 9
-
-                //0 kan het alleen zijn als het 6 lang is en GEEN MM heeft
-                if (!inp.Contains(MM))
-                    Console.WriteLine("0onbekendeActie");
-
-                //6 kan het alleen zijn als het 6 lang is en GEEN RU heeft
-                if (!inp.Contains(RU))
-                    Console.WriteLine("6onbekendeActie");
-
-                //9 kan het alleen zijn als MU, LU, MM, RU en RD in voorkomen
-                if (inp.Contains(MU) && inp.Contains(LU) && inp.Contains(MM) && inp.Contains(RU) && inp.Contains(RD))
-                    Console.WriteLine("9onbekendeActie");
-            }
-            if (inp.Length == 7)
-            {
-                var tmp = inp;
-                //8 = LU MU RU MM LD MD RD
+                if(!itIs0 && !itIs9)
+                    s6 = inp;
             }
         }
+    }
+
+    private bool Determine9(string inp, string s4)
+    {
+        string tmp4 = s4;
+
+        foreach (var c in inp)
+        {
+            // eerst alles van mogelijk 4 weghalen. 
+            if (tmp4.Contains(c))
+            {
+                tmp4 = tmp4.Replace(c.ToString(), String.Empty);
+            }
+        }
+
+        // Als alles van 4 weggehaald kunnen worden, terwijl het 6 lang is, dan is het een 9
+        if (tmp4.Length == 0)
+            return true;
+
+        return false;
+    }
+
+    private bool Determine0(string inp, string s4, string s7)
+    {
+        string tmp4 = s4;
+        string tmp7 = s7;
+
+        foreach (var c in inp)
+        {
+            // eerst alles van mogelijk 4 weghalen. 
+            if (tmp4.Contains(c))
+            {
+                tmp4 = tmp4.Replace(c.ToString(), String.Empty);
+            }
+        }
+
+        foreach (var c in inp)
+        {
+            // eerst alles van mogelijk 4 weghalen. 
+            if (tmp7.Contains(c))
+            {
+                tmp7 = tmp7.Replace(c.ToString(), String.Empty);
+            }
+        }
+
+        // Als alles van 4 weggehaald kunnen worden, terwijl het 6 lang is, dan is het geen 0 maar een 9 of een 6
+        if (tmp4.Length == 0)
+            return false;
+
+        // als moet alles van 4 maar wel alles van 7 overeenkomt, dan is het een 0
+        if (tmp4.Length == 1 && tmp7.Length == 0)
+            return true;
+
+        // anders dus een 6
+        return false;
+    }
+
+    private bool Determine5(string inp, string s1, string s7, string s4)
+    {
+        string tmp = inp;
+        string tmp7 = s7;
+
+        foreach (var c in inp)
+        {
+            // kijken of MU, RU en RD kunnen vervangen
+            if (s7.Contains(c))
+            {
+                tmp7 = tmp7.Replace(c.ToString(), String.Empty);
+                tmp = tmp.Replace(c.ToString(), String.Empty);
+            }
+        }
+
+        // als de 5 letterig zowel een MU als een RU en RD heeft, dan kan het alleen een 3 zijn 
+        if (tmp7.Length == 0)
+        {
+            return false;
+        }
+
+        // nu kan het ook nog een 5 zijn als uit 7 RU is overgebleven, dat weten we hier niet
+        // als uit 7 de RD is overgebleven, dan wordt het niwet gedekt door inp en is het een 2
+        if (tmp7.Length == 1)
+        {
+            var rest = tmp;
+            // daarom eerst weghalen wat ook in 4 voorkomt, dat kan zijn LU en/of MM
+            foreach(var c in tmp)
+            {
+                if (s4.Contains(c))
+                    rest = rest.Replace(c.ToString(), String.Empty);
+            }
+
+            // wat er overblijft komt dus niet meer voor in 7 en 4
+            tmp = rest;
+        }
+
+        // als er 1 resteert, dan kan dan alleen nog MD zijn en is het een 5,
+        // anders is het 2 en dat zijn LD en MD en is het een 2
+        return tmp.Length == 1;
+    }
+
+    private bool Determine3(string inp, string s7)
+    {
+        string tmp7 = s7;
+
+        foreach (var c in inp)
+        {
+            // kijken of MU, RU en RD kunnen vervangen
+            if (tmp7.Contains(c))
+            {
+                tmp7 = tmp7.Replace(c.ToString(), String.Empty);
+            }
+        }
+
+        // als de 5 letterig zowel een MU als een RU en RD heeft, dan kan het alleen een 3 zijn 
+        if (tmp7.Length == 0)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public int Translate(List<string> digits)
@@ -222,6 +310,8 @@ public class DigitGeneric
 
     private string ToPattern(string inp)
     {
-        return $"[{inp}]"+"{"+$"{inp.Length}"+"}";
+        return inp.Length == 0 
+            ? $""
+            : $"[{inp}]"+"{"+$"{inp.Length}"+"}";
     }
 }

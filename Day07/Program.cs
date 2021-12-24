@@ -1,7 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 Console.WriteLine("Hello, World!");
 
-string inputFilePart = @"./ProjectItems/input.txt";
+string inputFilePart = @"./ProjectItems/inputExample.txt";
 
 (long position, long costs) CalculateFuelWithConstantBurnRate(string inputFile)
 {
