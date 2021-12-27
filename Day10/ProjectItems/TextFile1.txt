@@ -1,0 +1,15 @@
+﻿Maak een verzameling met (. Elke ( wordt hier bij geteld
+Maak een verzameling met ). Elke ) wordt hier bij geteld. Zodra eentje hierbij geteld wordt, wordt gecontroleerd dat 
+het aantal items in ) niet groter is dan (. Als dat wel zo is, dan hebben we de eerste foute sluiting te pakken en zetten we de rij apart,
+want die is dan corrupt.
+
+herhaal dit voor {} [] en <>
+
+( - RoundBracketOpen
+) - RoundBracketClose
+{ - BraceOpen
+} - BraceClose
+[ - SquareBracketOpen
+] - SquareBracketClose
+< - SmallerThen
+> - GreaterThen
