@@ -3,7 +3,7 @@ Console.WriteLine("Hello, World!");
 
 string inputFile = @"./ProjectItems/input.txt";
 List<string> inputRaw = File.ReadAllLines(inputFile).ToList();
-List<int> lowestPoints = new List<int>();
+List<PartPoint> lowestPoints = new List<PartPoint>();
 
 
 int Part2()
@@ -18,8 +18,29 @@ int Part2()
     //1 get first lowest 
     foreach (var lowestPoint in lowestPoints)
     {
-        List<PartPoint> unhandleidPoints = new List<PartPoint>();
+        List<PartPoint> unhandledPoints = new List<PartPoint>();
 
+        if(lowestPoint.PartOfBassin)
+        {
+            unhandledPoints.Add(lowestPoint);
+        }
+
+
+
+        for (int i = 0; i < inputRaw.Count(); i++)
+        {
+            var currentRowPosition = i;
+
+            for (int ii = 0; ii < inputRaw[currentRowPosition].Length; ii++)
+            {
+                int currentPosition = ii;
+
+                var p = new PartPoint(inputRaw, currentRowPosition, currentPosition);
+
+                if (p.IsSmallest)
+                    unhandledPoints.Add(p);
+            }
+        }
         //2 calculate neighbours
         //  and add to unhandled neighbours
     }
@@ -47,13 +68,14 @@ int Part2()
     return retval;
 }
 
-lowestPoints.ForEach(p => Console.Write(p));
+CalculateLowest(inputRaw).ForEach(p => Console.Write(p.CurrentValue));
 Console.WriteLine();
 Console.WriteLine($"Day 9, part 1: {CalculatePart1(inputRaw)}");
 Console.ReadKey();
 
 int CalculatePart1(List<string> inputRaw)
 {
+    lowestPoints = CalculateLowest(inputRaw);
     return CalculateLowest(inputRaw).Select(x => Convert.ToInt32(x.CurrentValue) + 1).ToList().Sum();
 }
 
@@ -70,7 +92,7 @@ List<PartPoint> CalculateLowest(List<string> inputRaw)
 
             var p = new PartPoint(inputRaw, currentRowPosition, currentPosition);
 
-            if (p.Smallest)
+            if (p.IsSmallest)
                 retval.Add(p);
         }
     }
@@ -80,36 +102,48 @@ List<PartPoint> CalculateLowest(List<string> inputRaw)
 public class PartPoint
 {
     private List<string> inputRaw = new List<string>();
-    private int rowPosition;
-    private int hPosition;
+    private int currentRowPosition;
+    private int currentPosition;
 
-    public PartPoint(List<string> inputRaw, int rowPosition, int hPosition)
+    public PartPoint(List<string> inputRaw, int currentRowPosition, int currentPosition)
     {
         this.inputRaw = inputRaw;
-        this.rowPosition = rowPosition;
-        this.hPosition = hPosition;
+        this.currentRowPosition = currentRowPosition;
+        this.currentPosition = currentPosition;
     }
 
-    private string previousRow => rowPosition > 0 ? inputRaw[rowPosition - 1] : String.Empty;
-    private string currentRow => inputRaw[rowPosition];
-    private string nextRow => rowPosition <= inputRaw.Count - 2 ? inputRaw[rowPosition + 1] : String.Empty;
+    private string previousRow => currentRowPosition > 0 ? inputRaw[currentRowPosition - 1] : String.Empty;
+    private string currentRow => inputRaw[currentRowPosition];
+    private string nextRow => currentRowPosition <= inputRaw.Count - 2 ? inputRaw[currentRowPosition + 1] : String.Empty;
 
-    private string above => !String.IsNullOrEmpty(previousRow) ? previousRow[hPosition].ToString() : String.Empty;
-    private string left => hPosition > 0 ? currentRow[hPosition - 1].ToString() : String.Empty;
-    private string right => hPosition + 1 <= currentRow.Length - 1 ? currentRow[hPosition + 1].ToString() : String.Empty;
-    private string below => !String.IsNullOrEmpty(nextRow) ? nextRow[hPosition].ToString() : String.Empty;
+    public PartPoint? Above => !String.IsNullOrEmpty(previousRow) ? new PartPoint(inputRaw, currentRowPosition - 1, currentPosition) : null;
 
-    public string CurrentValue => currentRow[hPosition].ToString();
+    public PartPoint? Left => currentPosition > 0 ? new PartPoint(inputRaw, currentRowPosition, currentPosition - 1) : null;
+    public PartPoint? Right => currentPosition + 1 <= currentRow.Length - 1 ? new PartPoint(inputRaw, currentRowPosition, currentPosition+1) : null;
+    public PartPoint? Below => !String.IsNullOrEmpty(nextRow) ? new PartPoint(inputRaw, currentRowPosition + 1, currentPosition) : null;
 
-    public bool Smallest => CurrentValue.IsSmallerThen(above) && CurrentValue.IsSmallerThen(left)
-        && CurrentValue.IsSmallerThen(right) && CurrentValue.IsSmallerThen(below);
-    public bool PartOfBassin => !Smallest;
+    public string CurrentValue => currentRow[currentPosition].ToString();
+
+    public bool IsSmallest => CurrentValue.IsSmallerThen(Above?.CurrentValue) && CurrentValue.IsSmallerThen(Left?.CurrentValue)
+        && CurrentValue.IsSmallerThen(Right?.CurrentValue) && CurrentValue.IsSmallerThen(Below?.CurrentValue);
+    public bool PartOfBassin => Convert.ToInt32(CurrentValue) < 9;
+
+    private PartPoint? GetPointIfRelevant(List<string> inputRaw, int neighbourPosition, int currentPosition, string currentValue)
+    {
+        var neighbour = new PartPoint(inputRaw, neighbourPosition, currentPosition);
+        var neighbourValue = Convert.ToInt32(neighbour.CurrentValue);
+
+        if (neighbourValue > Convert.ToInt32(currentValue) && neighbourValue < 9)
+            return neighbour;
+
+        return null;
+    }
 
 }
 
 public static class Ext
 {
-    public static bool IsSmallerThen(this string current, string neighbour)
+    public static bool IsSmallerThen(this string current, string? neighbour)
     {
         bool retval;
         retval = String.IsNullOrEmpty(neighbour) || (Convert.ToInt32(current) < Convert.ToInt32(neighbour));
