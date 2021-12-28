@@ -1,23 +1,14 @@
 ﻿// See https://aka.ms/new-console-template for more information
 Console.WriteLine("Hello, World!");
 
-string inputFile = @"./ProjectItems/inputExample.txt";
+string inputFile = @"./ProjectItems/input.txt";
 List<string> inputRaw = File.ReadAllLines(inputFile).ToList();
 
-List<char> RoundBracketOpen = new List<char>();
-List<char> RoundBracketClose = new List<char>();
-List<char> BraceOpen = new List<char>();
-List<char> BraceClose = new List<char>();
-List<char> SquareBracketOpen = new List<char>();
-List<char> SquareBracketClose = new List<char>();
-List<char> SmallerThen = new List<char>();
-List<char> GreaterThen = new List<char>();
+Console.WriteLine($"Day 10, Part 1: Corrupt score is (370407) {CalculateCorruptScore(inputRaw)}");
 
-List<string> corruptLines = CalculateCorruptLines(inputRaw);
-
-List<string> CalculateCorruptLines(List<string> inputRaw)
+int CalculateCorruptScore(List<string> inputRaw)
 {
-    List<string> retval = new List<string>();
+    int retval = 0;
 
     foreach (var line in inputRaw)
     {
@@ -25,158 +16,27 @@ List<string> CalculateCorruptLines(List<string> inputRaw)
         int index = 0;
         var tmp = line;
 
-        foreach (char c in line)
+        foreach (char current in line)
         {
-            if (c.Equals(')'))
+            if (current.Equals(')'))
             {
-                tmp = tmp.Remove(index, 1).Insert(index,".");
-                var substringBack = new string(tmp.Substring(0, index).Reverse().ToArray());
-                var t = substringBack;
-                int i = 0;
-                while(i < substringBack.Length)
-                {
-                    if (substringBack[i] != '.' && substringBack[i] != '(')
-                    {
-                        rowIsCorrupt = true;
-                        Console.WriteLine($"Corrupt at {substringBack[i]}");
-                    }
-                    else if (substringBack[i] != '.' && substringBack[i] == '(')
-                    {
-                        t = t.Remove(i, 1).Insert(i, ".");
-                        break;
-                    }
-                    i++;
-                }
-
-                substringBack = t;
-
-                ////substringBack = substringBack.Replace(".",String.Empty);
-
-                //if (!substringBack.Last().Equals('('))
-                //{
-                //    rowIsCorrupt = true;
-                //    Console.WriteLine("Corrupt");
-                //}
-
-                var openerIndex = substringBack.Length - 1 - i;
-                tmp = tmp.Remove(openerIndex, 1).Insert(openerIndex, ".");
+                retval += ValidateClosingChar('(',current,ref tmp, index, ref rowIsCorrupt);
             }
-            if (c.Equals('}'))
+            if (current.Equals('}'))
             {
-                tmp = tmp.Remove(index, 1).Insert(index, ".");
-                var substringBack = new string(tmp.Substring(0, index).Reverse().ToArray());
-                var t = substringBack;
-                int i = 0;
-                while (i < substringBack.Length)
-                {
-                    if (substringBack[i] != '.' && substringBack[i] != '{')
-                    {
-                        rowIsCorrupt = true;
-                        Console.WriteLine($"Corrupt at {substringBack[i]}");
-                    }
-                    else if (substringBack[i] != '.' && substringBack[i] == '{')
-                    {
-                        t = t.Remove(i, 1).Insert(i, ".");
-                        break;
-                    }
-                    i++;
-                }
-
-                substringBack = t;
-
-                var openerIndex = substringBack.Length - 1 - i;
-                tmp = tmp.Remove(openerIndex, 1).Insert(openerIndex, ".");
+                retval += ValidateClosingChar('{', current, ref tmp, index, ref rowIsCorrupt);
             }
-            if (c.Equals(']'))
+            if (current.Equals(']'))
             {
-                tmp = tmp.Remove(index, 1).Insert(index, ".");
-                var substringBack = new string(tmp.Substring(0, index).Reverse().ToArray());
-                var t = substringBack;
-                int i = 0;
-                while (i < substringBack.Length)
-                {
-                    if (substringBack[i] != '.' && substringBack[i] != '[')
-                    {
-                        rowIsCorrupt = true;
-                        Console.WriteLine($"Corrupt at {substringBack[i]}");
-                    }
-                    else if (substringBack[i] != '.' && substringBack[i] == '[')
-                    {
-                        t = t.Remove(i, 1).Insert(i, ".");
-                        break;
-                    }
-                    i++;
-                }
-
-                substringBack = t;
-
-                ////substringBack = substringBack.Replace(".",String.Empty);
-
-                //if (!substringBack.Last().Equals('('))
-                //{
-                //    rowIsCorrupt = true;
-                //    Console.WriteLine("Corrupt");
-                //}
-
-                var openerIndex = substringBack.Length - 1 - i;
-                tmp = tmp.Remove(openerIndex, 1).Insert(openerIndex, ".");
+                retval += ValidateClosingChar('[', current, ref tmp, index, ref rowIsCorrupt);
             }
-            if (c.Equals('>'))
+            if (current.Equals('>'))
             {
-                tmp = tmp.Remove(index, 1).Insert(index, ".");
-                var substringBack = new string(tmp.Substring(0, index).Reverse().ToArray());
-                var t = substringBack;
-                int i = 0;
-                while (i < substringBack.Length)
-                {
-                    if (substringBack[i] != '.' && substringBack[i] != '<')
-                    {
-                        rowIsCorrupt = true;
-                        Console.WriteLine($"Corrupt at {substringBack[i]}");
-                    }
-                    else if (substringBack[i] != '.' && substringBack[i] == '<')
-                    {
-                        t = t.Remove(i, 1).Insert(i, ".");
-                        break;
-                    }
-                    i++;
-                }
-
-                substringBack = t;
-
-                var openerIndex = substringBack.Length - 1 - i;
-                tmp = tmp.Remove(openerIndex, 1).Insert(openerIndex, ".");
+                retval += ValidateClosingChar('<', current, ref tmp, index, ref rowIsCorrupt);
             }
-
-
-            //if (c.Equals('('))
-            //    RoundBracketOpen.Add(c);
-            //if (c.Equals('{'))
-            //    BraceOpen.Add(c);
-            //if (c.Equals('['))
-            //    SquareBracketOpen.Add(c);
-            //if (c.Equals('<'))
-            //    SmallerThen.Add(c);
-            //if (c.Equals(')'))
-            //{
-            //    rowIsCorrupt = RoundBracketClose.AddCloser(c).AndValidateAgainst(RoundBracketOpen);
-            //}
-            //if (c.Equals('}'))
-            //{
-            //    rowIsCorrupt = BraceClose.AddCloser(c).AndValidateAgainst(BraceOpen);
-            //}
-            //if (c.Equals(']'))
-            //{
-            //    rowIsCorrupt = SquareBracketClose.AddCloser(c).AndValidateAgainst(SquareBracketOpen);
-            //}
-            //if (c.Equals('>'))
-            //{
-            //    rowIsCorrupt = SmallerThen.AddCloser(c).AndValidateAgainst(GreaterThen);
-            //}
 
             if (rowIsCorrupt)
             {
-                retval.Add(line);
                 break;
             }
 
@@ -187,16 +47,51 @@ List<string> CalculateCorruptLines(List<string> inputRaw)
     return retval;
 }
 
-public static class Ext
+int ValidateClosingChar(char expectedOpener, char current, ref string tmp, int index, ref bool rowIsCorrupt)
 {
-    public static List<char> AddCloser(this List<char> closingList, char c)
+    tmp = tmp.Remove(index, 1).Insert(index, ".");
+    var substringBack = new string(tmp.Substring(0, index).Reverse().ToArray());
+    var t = substringBack;
+    int i = 0;
+    while (i < substringBack.Length)
     {
-        closingList.Add(c);
-        return closingList;
+        if (substringBack[i] != '.' && substringBack[i] != expectedOpener)
+        {
+            rowIsCorrupt = true;
+            Console.WriteLine($"Corrupt at {substringBack[i]}. Expected '{CorrespondingCloseChar(substringBack[i])}', but found {current}.");
+            return CorruptCharScore(current);
+            break;
+        }
+        else if (substringBack[i] != '.' && substringBack[i] == expectedOpener)
+        {
+            t = t.Remove(i, 1).Insert(i, ".");
+            break;
+        }
+        i++;
     }
 
-    public static bool AndValidateAgainst(this List<char> closeList, List<char> openList)
-    {
-        return closeList.Count > openList.Count;
-    }
+    substringBack = t;
+
+    var openerIndex = substringBack.Length - 1 - i;
+    tmp = tmp.Remove(openerIndex, 1).Insert(openerIndex, ".");
+
+    return 0;
+}
+
+int CorruptCharScore(char c)
+{
+    // ): 3 points.
+    // ]: 57 points.
+    // }: 1197 points.
+    // >: 25137 points.
+    return c.Equals(')') ? 3
+    : c.Equals(']') ? 57
+    : c.Equals('}') ? 1197 : 25137;
+}
+
+char CorrespondingCloseChar(char v)
+{
+    return v.Equals('{') ? '}'
+        : v.Equals('(') ? ')'
+        : v.Equals('[') ? ']' : '>';
 }
