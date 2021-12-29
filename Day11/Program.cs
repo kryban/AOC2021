@@ -4,70 +4,58 @@ Console.WriteLine("Hello, World!");
 string inputFile = @"./ProjectItems/input.txt";
 List<string> inputRaw = File.ReadAllLines(inputFile).ToList();
 
-List<Octopus> octoPussies = ConvertToOctopussies(inputRaw);
+List<Octopus> octoPussies = new List<Octopus>();
+
+ConvertToOctopussies(inputRaw, octoPussies);
 
 Console.WriteLine($"Day 11, part 1: ");
 
-List<Octopus> ConvertToOctopussies(List<string> inputRaw)
-{
-    List<Octopus> retval = new List<Octopus>();
+void ConvertToOctopussies(List<string> inputRaw, List<Octopus> octoPussies)
+{  
     var rowPosition = 0;
     foreach (var line in inputRaw)
     {
         var currenPosition = 0;
         foreach(var item in line)
         {
-            var o = new Octopus(inputRaw, rowPosition, currenPosition);
-            retval.Add(o);
+            var o = new Octopus(inputRaw, octoPussies, rowPosition, currenPosition);
+            octoPussies.Add(o);
 
             currenPosition++;
         }
         rowPosition++;
     }
-
-    return retval;
-}
+ }
 
 public class Octopus
 {
     private List<string> inputRaw = new List<string>();
-
-    private string previousRow;
-    private string currentRow;
-    private string nextRow;
-
-    private Octopus? leftUp;
-    private Octopus? middleUp ;
-    private Octopus? rightUp;
-    private Octopus? left;
-    private Octopus? right;
-    private Octopus? leftDown;
-    private Octopus? middleDown;
-    private Octopus? rightDown;
+    private List<Octopus> octoPussies; 
 
     public int currentRowPosition;
     public int currentPosition;
 
-    public Octopus(List<string> inputRaw, int currentRowPosition, int currentPosition)
+    private string previousRow => currentRowPosition > 0 ? inputRaw[currentRowPosition - 1] : String.Empty;
+    private string currentRow => inputRaw[currentRowPosition];
+    private string nextRow => currentRowPosition <= inputRaw.Count - 2 ? inputRaw[currentRowPosition + 1] : String.Empty;
+
+    public Octopus(List<string> inputRaw, List<Octopus> octoPussies, int currentRowPosition, int currentPosition)
     {
         this.inputRaw = inputRaw;
+        this.octoPussies = octoPussies;
         this.currentRowPosition = currentRowPosition;
         this.currentPosition = currentPosition;
-        
-        previousRow = currentRowPosition > 0 ? inputRaw[currentRowPosition - 1] : String.Empty;
-        currentRow = inputRaw[currentRowPosition];
-        nextRow = currentRowPosition <= inputRaw.Count - 2 ? inputRaw[currentRowPosition + 1] : String.Empty;
-
-        Octopus? middleUp = !String.IsNullOrEmpty(previousRow) ? new Octopus(inputRaw, currentRowPosition - 1, currentPosition) : null;
-        Octopus? left = currentPosition > 0 ? new Octopus(inputRaw, currentRowPosition, currentPosition - 1) : null;
-        Octopus? right = currentPosition + 1 <= currentRow.Length - 1 ? new Octopus(inputRaw, currentRowPosition, currentPosition + 1) : null; 
-        Octopus? middleDown = !String.IsNullOrEmpty(nextRow) ? new Octopus(inputRaw, currentRowPosition + 1, currentPosition) : null; 
-
-        Octopus? leftUp = left != null && middleUp != null ? new Octopus(inputRaw, currentRowPosition-1, currentPosition-1) : null;
-        Octopus? rightUp = right != null && middleUp != null ? new Octopus(inputRaw, currentRowPosition - 1, currentPosition + 1) : null; 
-        Octopus? leftDown = left != null && middleDown != null ? new Octopus(inputRaw, currentRowPosition + 1, currentPosition - 1) : null;
-        Octopus? rightDown = right != null && middleDown != null ? new Octopus(inputRaw, currentRowPosition + 1, currentPosition + 1) : null;
     }
+
+    private Octopus? middleUp => !String.IsNullOrEmpty(previousRow) ? Find(octoPussies, currentRowPosition - 1, currentPosition) : null;
+    private Octopus? left => currentPosition > 0 ? Find(octoPussies, currentRowPosition, currentPosition - 1) : null;
+    private Octopus? right => currentPosition + 1 <= currentRow.Length - 1 ? Find(octoPussies, currentRowPosition, currentPosition + 1) : null;
+    private Octopus? middleDown => !String.IsNullOrEmpty(nextRow) ? Find(octoPussies, currentRowPosition + 1, currentPosition) : null;
+
+    private Octopus? leftUp => left != null && middleUp != null ? Find(octoPussies, currentRowPosition - 1, currentPosition - 1) : null;
+    private Octopus? rightUp => right != null && middleUp != null ? Find(octoPussies, currentRowPosition - 1, currentPosition + 1) : null;
+    private Octopus? leftDown => left != null && middleDown != null ? Find(octoPussies, currentRowPosition + 1, currentPosition - 1) : null;
+    private Octopus? rightDown => right != null && middleDown != null ? Find(octoPussies, currentRowPosition + 1, currentPosition + 1) : null;
 
     public Octopus? MiddleUp => middleUp;
     public Octopus? Left => left;
@@ -78,7 +66,7 @@ public class Octopus
     Octopus? RightUp => rightUp;
     Octopus? LeftDown => leftDown;
     Octopus? RightDown => rightDown;
-
+   
     public int NumberOfFlashes { get; set; }
 
     public string CurrentValue => currentRow[currentPosition].ToString();
@@ -87,10 +75,12 @@ public class Octopus
         && CurrentValue.IsSmallerThen(Right?.CurrentValue) && CurrentValue.IsSmallerThen(MiddleDown?.CurrentValue);
     public bool IsPartOfBassin => Convert.ToInt32(CurrentValue) < 9;
 
-    internal void CollectNeighbours()
+    private Octopus? Find(List<Octopus> octopussies, int currentRowPosition, int currenPosition)
     {
-        throw new NotImplementedException();
+        return octoPussies.FirstOrDefault(o => o.currentRowPosition == currenPosition && o.currentPosition == currentPosition);
     }
+
+
 }
 
 public static class Ext
