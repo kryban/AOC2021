@@ -35,6 +35,8 @@ void IncreaseEnergyInSteps(int numberOfSteps, List<Octopus> octoPussies)
     while (i <= numberOfSteps)
     {
         octoPussies.ForEach(octo => octo.CurrentValue++);
+        octoPussies.ForEach(octo => octo.ConsiderNeighbourIncrease());
+
         i++;
     }
 }
@@ -81,12 +83,11 @@ public class Octopus
             {
                 NumberOfFlashes++;
                 CurrentValue = 0;
-                IncreaseNeighbours();
             }
         }
     }
 
-    private void IncreaseNeighbours()
+    public void IncreaseNeighbours()
     {
         LeftUp?.Increase();
         MiddleUp?.Increase();
@@ -98,9 +99,17 @@ public class Octopus
         RightDown?.Increase();
     }
 
+    internal void ConsiderNeighbourIncrease()
+    {
+        if (CurrentValue == 0)
+        {
+            IncreaseNeighbours();
+        }
+    }
+
     private Octopus? Find(List<Octopus> octopussies, int currentRowPosition, int currenPosition)
     {
-        return octoPussies.FirstOrDefault(o => o.currentRowPosition == currenPosition && o.currentPosition == currentPosition);
+        return octopussies.FirstOrDefault(o => o.currentRowPosition == currentRowPosition && o.currentPosition == currenPosition);
     }
 }
 
