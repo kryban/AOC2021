@@ -1,14 +1,14 @@
 ﻿// See https://aka.ms/new-console-template for more information
 Console.WriteLine("Hello, World!");
 
-string inputFile = @"./ProjectItems/inputExample2.txt";
+string inputFile = @"./ProjectItems/inputExample.txt";
 List<string> inputRaw = File.ReadAllLines(inputFile).ToList();
 
 List<Octopus> octoPussies = new List<Octopus>();
 
 ConvertToOctopussies(inputRaw, octoPussies);
 
-IncreaseEnergyInSteps(1, octoPussies);
+IncreaseEnergyInSteps(100, octoPussies);
 
 Console.WriteLine($"Day 11, part 1: ");
 
