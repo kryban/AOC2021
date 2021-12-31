@@ -10,11 +10,16 @@ ConvertToOctopussies(inputRaw, octoPussies);
 
 IncreaseEnergyInSteps(100, octoPussies);
 
+Console.WriteLine("///////////////////////////////////////////////");
 Console.WriteLine($"Day 11, part 1 (1743): {octoPussies.Sum(x => x.NumberOfFlashes)}");
+Console.WriteLine("///////////////////////////////////////////////");
+Console.WriteLine($"\nDay 11, part 2 (364): {CalculateStepOfTotalSynchronisation(octoPussies)}");
+Console.WriteLine("///////////////////////////////////////////////");
 Console.ReadKey();
 
 void ConvertToOctopussies(List<string> inputRaw, List<Octopus> octoPussies)
-{  
+{
+    octoPussies.RemoveAll(x => x.CurrentValue > -1);
     var rowPosition = 0;
     foreach (var line in inputRaw)
     {
@@ -54,6 +59,40 @@ void IncreaseEnergyInSteps(int numberOfSteps, List<Octopus> octoPussies)
     }
 }
 
+int CalculateStepOfTotalSynchronisation(List<Octopus> octoPussies)
+{
+    ConvertToOctopussies(inputRaw, octoPussies);
+
+    int retval = 0;
+    int i = 1;
+    while (retval == 0)
+    {
+        //when set to zero, it freezes on zero during the whole step. 
+        //so when property is increased by a neighbour, but is not processed yet by this increase, then it should NOT be increased untill the next step/
+        octoPussies.ForEach(octo => { if (!octo.ZeroIsSetInCurrentStep) octo.CurrentValue++; });
+
+        while (octoPussies.Any(octo => octo.ZeroIsSetInCurrentStep && !octo.NeighboursIncreaseFinished))
+        {
+            octoPussies.ForEach(o => { if (o.ZeroIsSetInCurrentStep && !o.NeighboursIncreaseFinished) o.IncreaseNeighbours(); });
+        }
+
+        Console.WriteLine($"Step {i}");
+        Console.WriteLine(PrintCurrentState(octoPussies));
+
+        if (!octoPussies.Any(o => o.CurrentValue > 0))
+        {
+            retval = i;
+        }
+
+        //prepare for the next step, in which all octopusses can be increased to zero
+        octoPussies.ForEach(o => o.ZeroIsSetInCurrentStep = false);
+
+        i++;
+    }
+
+    return retval;
+}
+
 string PrintCurrentState(List<Octopus> octos)
 {
     // just for presentation purposes
@@ -71,6 +110,8 @@ string PrintCurrentState(List<Octopus> octos)
 
     return retval;
 }
+
+
 
 public class Octopus
 {
