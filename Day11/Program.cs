@@ -8,8 +8,11 @@ List<Octopus> octoPussies = new List<Octopus>();
 
 ConvertToOctopussies(inputRaw, octoPussies);
 
-IncreaseEnergyInSteps(100, octoPussies);
+//Console.WriteLine(PrintCurrentState(octoPussies));
+//Console.WriteLine("");  
+IncreaseEnergyInSteps(3, octoPussies);
 
+Console.WriteLine(PrintCurrentState(octoPussies));
 Console.WriteLine($"Day 11, part 1: ");
 
 void ConvertToOctopussies(List<string> inputRaw, List<Octopus> octoPussies)
@@ -31,14 +34,43 @@ void ConvertToOctopussies(List<string> inputRaw, List<Octopus> octoPussies)
 
 void IncreaseEnergyInSteps(int numberOfSteps, List<Octopus> octoPussies)
 {
-    int i = 0;
+    int i = 1;
     while (i <= numberOfSteps)
     {
-        octoPussies.ForEach(octo => octo.CurrentValue++);
-        octoPussies.ForEach(octo => octo.ConsiderNeighbourIncrease());
+        //when set to zero, it freezes on zero during the whole step. 
+        //so when property is increased by a neighbour, but is not processed yet by this increase, then it should NOT be increased untill the next step/
+        octoPussies.ForEach(octo => { if (!octo.ZeroIsSetInCurrentStep) octo.CurrentValue++; });
+
+        if (i == 1) // only the first time for all octos, the rest will be done durig property change
+            octoPussies.ForEach(octo => octo.ConsiderNeighbourIncrease());
+
+        Console.WriteLine($"After update with 1 in step {i}");
+        Console.WriteLine(PrintCurrentState(octoPussies));
+        Console.WriteLine("");
+
+        //prepare for the next step, in which all octopusses can be increased to zero
+        octoPussies.ForEach(o => o.ZeroIsSetInCurrentStep = false);
 
         i++;
     }
+}
+
+string PrintCurrentState(List<Octopus> octos)
+{
+    string retval = "";
+
+    octoPussies.Take(10).ToList().ForEach(o => retval += $"{o.CurrentValue.ToString()}"); retval += Environment.NewLine;
+    octoPussies.Skip(10).Take(10).ToList().ForEach(o => retval += $"{o.CurrentValue.ToString()}"); retval += Environment.NewLine;
+    octoPussies.Skip(20).Take(10).ToList().ForEach(o => retval += $"{o.CurrentValue.ToString()}");retval += Environment.NewLine;
+    octoPussies.Skip(30).Take(10).ToList().ForEach(o => retval += $"{o.CurrentValue.ToString()}");retval += Environment.NewLine;
+    octoPussies.Skip(40).Take(10).ToList().ForEach(o => retval += $"{o.CurrentValue.ToString()}");retval += Environment.NewLine;
+    octoPussies.Skip(50).Take(10).ToList().ForEach(o => retval += $"{o.CurrentValue.ToString()}");retval += Environment.NewLine;
+    octoPussies.Skip(60).Take(10).ToList().ForEach(o => retval += $"{o.CurrentValue.ToString()}");retval += Environment.NewLine;
+    octoPussies.Skip(70).Take(10).ToList().ForEach(o => retval += $"{o.CurrentValue.ToString()}");retval += Environment.NewLine;
+    octoPussies.Skip(80).Take(10).ToList().ForEach(o => retval += $"{o.CurrentValue.ToString()}");retval += Environment.NewLine;
+    octoPussies.Skip(90).Take(10).ToList().ForEach(o => retval += $"{o.CurrentValue.ToString()}");retval += Environment.NewLine;
+
+    return retval;
 }
 
 public class Octopus
@@ -74,6 +106,8 @@ public class Octopus
  
     public int NumberOfFlashes { get; set; }
 
+    public bool ZeroIsSetInCurrentStep; 
+
     private int currentValue;
     public int CurrentValue { get => currentValue;
         set
@@ -82,7 +116,9 @@ public class Octopus
             if(CurrentValue > 9)
             {
                 NumberOfFlashes++;
-                CurrentValue = 0;
+                currentValue = 0;
+                ZeroIsSetInCurrentStep = true;
+                IncreaseNeighbours();
             }
         }
     }
