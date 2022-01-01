@@ -5,7 +5,21 @@ string inputFile = @"./ProjectItems/inputExample2.txt";
 List<string> inputRaw = File.ReadAllLines(inputFile).ToList();
 List<Cave> caves = ConvertToCaves(inputRaw);
 
+Console.WriteLine($"Day 12, part 1: {CalculateAllRoutes(caves)}");
 
+int CalculateAllRoutes(List<Cave> caves)
+{
+    /*
+    1. start at "start cave"
+        2 register "start cave" in route row
+    2. look for "end cave" neighbour
+        3 if found, ad "end cave" to route row
+        4 if not: go for first not passed smallCave or largeCave 
+        5 go to 2
+
+     */
+
+}
 
 List<Cave> ConvertToCaves(List<string> inputRaw)
 {
@@ -16,7 +30,7 @@ List<Cave> ConvertToCaves(List<string> inputRaw)
         var left = inp.Split('-')[0];
         var right = inp.Split('-')[1];
 
-        // an end cave can ONLY be used a a neighbour and not as a cave
+        // an end cave can ONLY be used a a neighbour and not as a cave to start from
         if (!retval.Any(c => c.Name.Equals(left)) && !left.Equals("end"))
             retval.Add(new Cave(left));
         if (!retval.Any(c => c.Name.Equals(right)) && !right.Equals("end"))
@@ -52,8 +66,8 @@ public class Cave
         Neighbours = new List<Cave>(); 
     }
     public string Name { get; set; }
-    public bool IsLarge { get; set; }
-    public bool IsSmall { get; set; }
+    public bool IsLarge => Char.IsUpper(Name[1]);
     public bool IsPassed { get; set; }
     public List<Cave> Neighbours { get; set; }
+
 }
