@@ -9,7 +9,12 @@ Console.WriteLine($"Day 12, part 1: {CalculateAllRoutes(caves)}");
 
 int CalculateAllRoutes(List<Cave> caves)
 {
+    List<string> routes = new List<string>();
     int retval = 0;
+
+    var startCave = caves.Find(x => x.Name.Equals("start"));
+
+
     /*
     1. start at "start cave"
         2 register "start cave" in route row
@@ -19,7 +24,7 @@ int CalculateAllRoutes(List<Cave> caves)
         5 go to 2
 
      */
-    return retval;
+    return routes.Count(); ;
 }
 
 List<Cave> ConvertToCaves(List<string> inputRaw)
@@ -67,8 +72,10 @@ public class Cave
         Neighbours = new List<Cave>(); 
     }
     public string Name { get; set; }
-    public bool IsLarge => Char.IsUpper(Name[1]);
+    public bool IsLarge => char.IsUpper(Name[1]);
     public bool IsPassed { get; set; }
     public List<Cave> Neighbours { get; set; }
+
+
 
 }
