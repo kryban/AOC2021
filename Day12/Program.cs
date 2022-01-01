@@ -18,10 +18,14 @@ int CalculateAllRoutes(List<Cave> caves)
     /*
     1. start at "start cave"
         2 register "start cave" in route row
-    2. look for "end cave" neighbour
-        3 if found, ad "end cave" to route row
-        4 if not: go for first not passed smallCave or largeCave 
-        5 go to 2
+    2. look for small and "unpassed" or largeCave neighbour
+        3 if found
+            41 register cave name to route 
+            42 go to 2
+        5 if not found
+            61 find "end cave" neighbour
+                71 if found: add "end cave"to route row and stop route
+                72 if not found, remove current route row
 
      */
     return routes.Count(); ;
