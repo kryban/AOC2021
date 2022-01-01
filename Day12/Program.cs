@@ -9,6 +9,7 @@ Console.WriteLine($"Day 12, part 1: {CalculateAllRoutes(caves)}");
 
 int CalculateAllRoutes(List<Cave> caves)
 {
+    int retval = 0;
     /*
     1. start at "start cave"
         2 register "start cave" in route row
@@ -18,7 +19,7 @@ int CalculateAllRoutes(List<Cave> caves)
         5 go to 2
 
      */
-
+    return retval;
 }
 
 List<Cave> ConvertToCaves(List<string> inputRaw)
