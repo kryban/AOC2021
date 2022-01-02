@@ -11,23 +11,24 @@ int CalculateAllRoutes(List<Cave> caves)
 {
     List<string> routes = new List<string>();
     int retval = 0;
+    bool continueSearch = true;
 
     var startCave = caves.Find(x => x.Name.Equals("start"));
 
+    while (continueSearch)
+    {
+        string route = string.Empty;
+        startCave.RegisterNode(ref route);
+        startCave.PassPassable(ref route, ref continueSearch);
+        
+        if(!routes.Any(c => c.Equals(route)))
+            routes.Add(route);
+        else
+        {
+            break;
+        }
+    }
 
-    /*
-    1. start at "start cave"
-        2 register "start cave" in route row
-    2. look for small and "unpassed" or largeCave neighbour
-        3 if found
-            41 register cave name to route 
-            42 go to 2
-        5 if not found
-            61 find "end cave" neighbour
-                71 if found: add "end cave"to route row and stop route
-                72 if not found, remove current route row
-
-     */
     return routes.Count(); ;
 }
 
@@ -40,21 +41,20 @@ List<Cave> ConvertToCaves(List<string> inputRaw)
         var left = inp.Split('-')[0];
         var right = inp.Split('-')[1];
 
-        // an end cave can ONLY be used a a neighbour and not as a cave to start from
-        if (!retval.Any(c => c.Name.Equals(left)) && !left.Equals("end"))
+        if (!retval.Any(c => c.Name.Equals(left)))
             retval.Add(new Cave(left));
-        if (!retval.Any(c => c.Name.Equals(right)) && !right.Equals("end"))
+        if (!retval.Any(c => c.Name.Equals(right)))
             retval.Add(new Cave(right));
 
         // a start cave cannot be set as a neighbour to travel to
-        if (!CaveContainsNeighbour(retval, left, right) && !left.Equals("end") && !right.Equals("start"))
+        if (!CaveContainsNeighbour(retval, left, right) && !right.Equals("start"))
         {
-            retval.Find(c => c.Name.Equals(left)).Neighbours.Add(new Cave(right));
+            retval.Find(c => c.Name.Equals(left)).Neighbours.Add(retval.Find(cc => cc.Name.Equals(right)));
         }
 
-        if (!CaveContainsNeighbour(retval, right, left) && !right.Equals("end") && !left.Equals("start"))
+        if (!CaveContainsNeighbour(retval, right, left) && !left.Equals("start"))
         {
-            retval.Find(c => c.Name.Equals(right)).Neighbours.Add(new Cave(left));
+            retval.Find(c => c.Name.Equals(right)).Neighbours.Add(retval.Find(cc => cc.Name.Equals(left)));
         }
     }
 
@@ -70,16 +70,41 @@ bool CaveContainsNeighbour(List<Cave> retval, string cavename, string neighbourn
 
 public class Cave
 {
+    public bool isPassedOnce;
     public Cave(string name)
     {
         Name = name;
         Neighbours = new List<Cave>(); 
     }
     public string Name { get; set; }
-    public bool IsLarge => char.IsUpper(Name[1]);
-    public bool IsPassed { get; set; }
+    public bool IsLarge => char.IsUpper(Name[0]);
+    public bool IsPassable => IsLarge || (!IsLarge && !isPassedOnce);
     public List<Cave> Neighbours { get; set; }
 
+    internal void RegisterNode(ref string route)
+    {
+        route += Name;
+    }
 
+    internal void PassPassable(ref string route, ref bool continueSearch)
+    {
+        Console.WriteLine($"Passed {Name}");
+        var c = Neighbours.Find(x => x.IsPassable);
 
+        if (c != null)
+        {
+            if(!c.Name.Equals("end"))
+            {
+                c.isPassedOnce = true;
+                c.RegisterNode(ref route);
+                c.PassPassable(ref route, ref continueSearch);
+            }
+            
+            c.RegisterNode(ref route);
+        }
+        else
+        {
+            //continueSearch = false;
+        }
+    }
 }
